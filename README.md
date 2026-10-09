@@ -54,7 +54,7 @@ A cada push na branch `main`, o GitHub Actions testa, compila e publica (`.githu
 2. Em *Configurações do projeto → Contas de serviço*, gere uma chave privada (JSON).
 3. No GitHub: *Settings → Secrets and variables → Actions*:
    - Secret `FIREBASE_SERVICE_ACCOUNT` = conteúdo do JSON;
-   - Variable `FIREBASE_PROJECT_ID` = id do projeto.
+   - (opcional) Variable `FIREBASE_PROJECT_ID` — se não informada, usa o projeto da própria chave.
 4. Rode o workflow *Publicar no Firebase* (aba Actions) ou faça um push na `main`.
 
 ## Desenvolvimento
