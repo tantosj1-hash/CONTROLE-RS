@@ -276,3 +276,9 @@ tr.desmarcado td, .revisao.desmarcado { opacity: .5; }
   .grade-form .col1 { grid-column: auto; }
   .kpi-valor { font-size: 18px; }
 }
+
+/* Logo no menu lateral: não pode ultrapassar a largura do menu */
+.marca .logo-rs { min-width: 0; }
+.marca .logo-rs > div { min-width: 0; }
+.marca .logo-nome { font-size: 15px !important; white-space: normal; overflow-wrap: anywhere; }
+.marca .logo-sub { font-size: 10.5px; letter-spacing: .12em; }
