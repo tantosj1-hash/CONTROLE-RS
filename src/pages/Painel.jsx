@@ -72,12 +72,12 @@ export default function Painel() {
     <div className="pagina">
       <div className="titulo-pagina"><div><h1>Painel</h1><p className="sub">Resumo financeiro {empresa === 'todas' ? 'consolidado das duas empresas' : ''}</p></div></div>
       <div className="kpis">
-        <Cartao titulo="A pagar (em aberto)" valor={brl(r.aPagar)} detalhe={`${r.qPagar} conta(s)`} cor="#dc2626" onClick={() => irPara('notas')} />
-        <Cartao titulo="Vencidas a pagar" valor={brl(r.vencidoPagar)} detalhe={`${r.qVencidoPagar} conta(s)`} cor="#b91c1c" onClick={() => irPara('notas')} />
-        <Cartao titulo="A receber (em aberto)" valor={brl(r.aReceber)} detalhe={`${r.qReceber} nota(s) · vencido ${brl(r.vencidoReceber)}`} cor="#0891b2" onClick={() => irPara('notas')} />
-        <Cartao titulo="Entradas no mês" valor={brl(r.entradasMes)} cor="#059669" onClick={() => irPara('pagamentos')} />
-        <Cartao titulo="Saídas no mês" valor={brl(r.saidasMes)} cor="#ea580c" onClick={() => irPara('pagamentos')} />
-        <Cartao titulo="Saldo do mês" valor={brl(r.entradasMes - r.saidasMes)} cor={r.entradasMes - r.saidasMes >= 0 ? '#059669' : '#dc2626'} detalhe={r.semComprovante ? `${r.semComprovante} pagamento(s) sem comprovante` : 'Todos os pagamentos com comprovante'} />
+        <Cartao titulo="A pagar (em aberto)" valor={brl(r.aPagar)} detalhe={`${r.qPagar} conta(s)`} cor="#9c2b28" onClick={() => irPara('notas')} />
+        <Cartao titulo="Vencidas a pagar" valor={brl(r.vencidoPagar)} detalhe={`${r.qVencidoPagar} conta(s)`} cor="#7f2220" onClick={() => irPara('notas')} />
+        <Cartao titulo="A receber (em aberto)" valor={brl(r.aReceber)} detalhe={`${r.qReceber} nota(s) · vencido ${brl(r.vencidoReceber)}`} cor="#8a6a2f" onClick={() => irPara('notas')} />
+        <Cartao titulo="Entradas no mês" valor={brl(r.entradasMes)} cor="#3f7a4f" onClick={() => irPara('pagamentos')} />
+        <Cartao titulo="Saídas no mês" valor={brl(r.saidasMes)} cor="#b4532a" onClick={() => irPara('pagamentos')} />
+        <Cartao titulo="Saldo do mês" valor={brl(r.entradasMes - r.saidasMes)} cor={r.entradasMes - r.saidasMes >= 0 ? '#3f7a4f' : '#9c2b28'} detalhe={r.semComprovante ? `${r.semComprovante} pagamento(s) sem comprovante` : 'Todos os pagamentos com comprovante'} />
       </div>
 
       <div className="duas-colunas">
