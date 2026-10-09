@@ -4,6 +4,7 @@ import {
   paraNumero, paraISO, decodificarBoleto, interpretarNotaTexto, extratoDoTexto, extratoOFX,
   interpretarComprovante, interpretarNotaXML, notasDaPlanilha, extratoDaPlanilha,
 } from '../src/lib/parsers';
+import { sha256 } from 'js-sha256';
 import { EMPRESAS } from '../src/lib/format';
 import { sugerirNotas, notaDuplicada, empresaPorDocumentos } from '../src/lib/conciliacao';
 
@@ -140,9 +141,10 @@ Mensagem: abastecimento carro`;
     expect(notaDuplicada({ numero: '10', parteDoc: '11.222.333/0001-81', empresa: 'rs_servicos', tipo: 'pagar', valor: 5 }, notas)).toBeTruthy();
     expect(empresaPorDocumentos(['45723174000110'], { rs_gestoes: { cnpj: '45.723.174/0001-10' } })).toBe('rs_gestoes');
   });
-  it('reconhece os CNPJs cadastrados da RS Serviços e RS Gestões', () => {
-    const cfg = Object.fromEntries(Object.values(EMPRESAS).map((e) => [e.id, { cnpj: e.cnpj }]));
-    expect(empresaPorDocumentos(['51.939.524/0001-83'], cfg)).toBe('rs_servicos');
-    expect(empresaPorDocumentos(['14115280000198'], cfg)).toBe('rs_gestoes');
+  it('reconhece a empresa pelo hash do CNPJ', () => {
+    expect(Object.values(EMPRESAS).every((e) => /^[0-9a-f]{64}$/.test(e.cnpjHash))).toBe(true);
+    const cfg = { rs_gestoes: { cnpj: '', cnpjHash: sha256('11444777000161') } };
+    expect(empresaPorDocumentos(['11.444.777/0001-61'], cfg)).toBe('rs_gestoes');
+    expect(empresaPorDocumentos(['11222333000181'], cfg)).toBe(null);
   });
 });

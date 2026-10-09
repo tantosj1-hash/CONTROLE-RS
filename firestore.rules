@@ -15,8 +15,18 @@ service cloud.firestore {
         && request.auth.token.email != null
         && request.auth.token.email_verified == true;
     }
+    // Donos do sistema identificados pelo SHA-256 do e-mail (o e-mail não fica exposto no código)
+    function hashEmail(e) {
+      return hashing.sha256(e).toHexString().lower();
+    }
+    function ehDono(e) {
+      return hashEmail(e) in [
+        '69ebe653af500dc42f13d4d34d60e8119470836e9c6b7bbd761ea8ff80a59837',
+        '362edb2239b749446ae82b2c1ef01ed0643185c1e79ce2583e79f1d0ada6da12'
+      ];
+    }
     function dono() {
-      return emailAtual() in ['natanaraujo.gg@gmail.com', 'tantosj1@gmail.com'];
+      return ehDono(emailAtual());
     }
     function cadastro() {
       return /databases/$(database)/documents/usuarios/$(emailAtual());
@@ -36,7 +46,7 @@ service cloud.firestore {
 
     match /usuarios/{email} {
       allow read: if permitido();
-      allow write: if admin() && !(email in ['natanaraujo.gg@gmail.com', 'tantosj1@gmail.com']);
+      allow write: if admin() && !ehDono(email);
     }
 
     match /config/{doc} {

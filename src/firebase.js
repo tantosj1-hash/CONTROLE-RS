@@ -1,4 +1,5 @@
 import { initializeApp, deleteApp } from 'firebase/app';
+import { sha256 } from 'js-sha256';
 import {
   getAuth, connectAuthEmulator, createUserWithEmailAndPassword, sendEmailVerification, signOut,
 } from 'firebase/auth';
@@ -10,7 +11,12 @@ export let db;
 let config;
 const usarEmulador = import.meta.env.VITE_USE_EMULATOR === 'true';
 
-export const DONOS = ['natanaraujo.gg@gmail.com', 'tantosj1@gmail.com'];
+// Donos do sistema, guardados apenas como SHA-256 do e-mail.
+const DONOS_HASH = [
+  '69ebe653af500dc42f13d4d34d60e8119470836e9c6b7bbd761ea8ff80a59837',
+  '362edb2239b749446ae82b2c1ef01ed0643185c1e79ce2583e79f1d0ada6da12',
+];
+export const ehDono = (email) => DONOS_HASH.includes(sha256(String(email || '').trim().toLowerCase()));
 
 async function carregarConfig() {
   const env = import.meta.env;

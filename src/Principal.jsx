@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { db, auth, DONOS } from './firebase';
+import { db, auth, ehDono as ehDonoEmail } from './firebase';
 import { EMPRESAS, LISTA_EMPRESAS } from './lib/format';
 import Painel from './pages/Painel';
 import Notas from './pages/Notas';
@@ -42,7 +42,7 @@ export default function Principal({ usuario }) {
   const [toast, setToast] = useState(null);
 
   const email = usuario.email.toLowerCase();
-  const ehDono = DONOS.includes(email);
+  const ehDono = ehDonoEmail(email);
 
   useEffect(() => {
     const erro = (e) => {
@@ -57,7 +57,7 @@ export default function Principal({ usuario }) {
       const salvo = s.data() || {};
       const cfg = {};
       LISTA_EMPRESAS.forEach((e) => {
-        cfg[e.id] = { razaoSocial: salvo[e.id]?.razaoSocial || '', cnpj: salvo[e.id]?.cnpj || e.cnpj };
+        cfg[e.id] = { razaoSocial: salvo[e.id]?.razaoSocial || '', cnpj: salvo[e.id]?.cnpj || '', cnpjHash: e.cnpjHash };
       });
       setConfigEmpresas(cfg);
     }, erro);

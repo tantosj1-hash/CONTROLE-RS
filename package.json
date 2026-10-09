@@ -20,6 +20,7 @@
   "homepage": "https://github.com/tantosj1-hash/CONTROLE-RS#readme",
   "dependencies": {
     "firebase": "^10.14.1",
+    "js-sha256": "^0.11.1",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "jszip": "^3.10.2",
