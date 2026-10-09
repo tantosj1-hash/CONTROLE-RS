@@ -1,6 +1,6 @@
 export const EMPRESAS = {
-  rs_servicos: { id: 'rs_servicos', nome: 'RS Serviços', cor: '#2563eb' },
-  rs_gestoes: { id: 'rs_gestoes', nome: 'RS Gestões', cor: '#059669' },
+  rs_servicos: { id: 'rs_servicos', nome: 'RS Serviços', cor: '#2563eb', cnpj: '51939524000183' },
+  rs_gestoes: { id: 'rs_gestoes', nome: 'RS Gestões', cor: '#059669', cnpj: '14115280000198' },
 };
 export const LISTA_EMPRESAS = Object.values(EMPRESAS);
 

@@ -4,6 +4,7 @@ import {
   paraNumero, paraISO, decodificarBoleto, interpretarNotaTexto, extratoDoTexto, extratoOFX,
   interpretarComprovante, interpretarNotaXML, notasDaPlanilha, extratoDaPlanilha,
 } from '../src/lib/parsers';
+import { EMPRESAS } from '../src/lib/format';
 import { sugerirNotas, notaDuplicada, empresaPorDocumentos } from '../src/lib/conciliacao';
 
 const leitura = (t) => ({ texto: t, linhas: t.split('\n'), paginas: [] });
@@ -138,5 +139,10 @@ Mensagem: abastecimento carro`;
     const notas = [{ id: '1', numero: '10', parteDoc: '11222333000181', empresa: 'rs_servicos', tipo: 'pagar', valor: 5 }];
     expect(notaDuplicada({ numero: '10', parteDoc: '11.222.333/0001-81', empresa: 'rs_servicos', tipo: 'pagar', valor: 5 }, notas)).toBeTruthy();
     expect(empresaPorDocumentos(['45723174000110'], { rs_gestoes: { cnpj: '45.723.174/0001-10' } })).toBe('rs_gestoes');
+  });
+  it('reconhece os CNPJs cadastrados da RS Serviços e RS Gestões', () => {
+    const cfg = Object.fromEntries(Object.values(EMPRESAS).map((e) => [e.id, { cnpj: e.cnpj }]));
+    expect(empresaPorDocumentos(['51.939.524/0001-83'], cfg)).toBe('rs_servicos');
+    expect(empresaPorDocumentos(['14115280000198'], cfg)).toBe('rs_gestoes');
   });
 });

@@ -52,7 +52,15 @@ export default function Principal({ usuario }) {
     const mapear = (snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     const u1 = onSnapshot(collection(db, 'notas'), (s) => { setNotas(mapear(s)); setCarregado((c) => ({ ...c, notas: true })); }, erro);
     const u2 = onSnapshot(collection(db, 'movimentos'), (s) => { setMovimentos(mapear(s)); setCarregado((c) => ({ ...c, movimentos: true })); }, erro);
-    const u3 = onSnapshot(doc(db, 'config', 'empresas'), (s) => setConfigEmpresas(s.data() || {}), erro);
+    // CNPJs cadastrados no sistema; o que for salvo em Configurações tem prioridade.
+    const u3 = onSnapshot(doc(db, 'config', 'empresas'), (s) => {
+      const salvo = s.data() || {};
+      const cfg = {};
+      LISTA_EMPRESAS.forEach((e) => {
+        cfg[e.id] = { razaoSocial: salvo[e.id]?.razaoSocial || '', cnpj: salvo[e.id]?.cnpj || e.cnpj };
+      });
+      setConfigEmpresas(cfg);
+    }, erro);
     const u4 = onSnapshot(doc(db, 'usuarios', email), (s) => setCadastro(s.data() || null), () => {});
     return () => { u1(); u2(); u3(); u4(); };
   }, [email]);

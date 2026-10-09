@@ -30,7 +30,7 @@ alterna entre *RS Serviços*, *RS Gestões* ou *Todas* (visão consolidada).
 1. Abra o site e clique em **Primeiro acesso**.
 2. Informe seu e-mail (um dos autorizados) e crie a senha (mínimo 8 caracteres).
 3. Clique no link de confirmação enviado por e-mail (veja também o spam) e depois em **Já confirmei**.
-4. Em **Configurações e Usuários**, preencha o CNPJ da RS Serviços e da RS Gestões — é isso que permite a identificação automática da empresa em cada nota.
+4. Os CNPJs já vêm cadastrados — **RS Serviços: 51.939.524/0001-83** e **RS Gestões: 14.115.280/0001-98** — e são usados para identificar automaticamente a empresa de cada nota. Em **Configurações e Usuários** dá para completar a razão social ou alterar o CNPJ.
 
 Para incluir outra pessoa: **Configurações e Usuários → Incluir novo usuário**. Se informar uma senha inicial, a conta já é criada;
 se deixar em branco, a pessoa usa **Primeiro acesso** com o e-mail liberado.
