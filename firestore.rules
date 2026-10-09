@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// Regras de segurança do CONTROLE-RS
+// - Somente usuários autenticados, com e-mail VERIFICADO e presentes na lista de
+//   acesso (ou donos do sistema) conseguem ler/gravar qualquer dado.
+// - Somente administradores gerenciam usuários e configurações.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function emailAtual() {
+      return request.auth.token.email.lower();
+    }
+    function autenticado() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email_verified == true;
+    }
+    function dono() {
+      return emailAtual() in ['natanaraujo.gg@gmail.com', 'tantosj1@gmail.com'];
+    }
+    function cadastro() {
+      return /databases/$(database)/documents/usuarios/$(emailAtual());
+    }
+    function permitido() {
+      return autenticado() && (dono() || exists(cadastro()));
+    }
+    function admin() {
+      return autenticado() && (dono() || (exists(cadastro()) && get(cadastro()).data.admin == true));
+    }
+    function empresaValida(d) {
+      return d.empresa in ['rs_servicos', 'rs_gestoes'];
+    }
+    function valorValido(d) {
+      return d.valor is number && d.valor >= 0;
+    }
+
+    match /usuarios/{email} {
+      allow read: if permitido();
+      allow write: if admin() && !(email in ['natanaraujo.gg@gmail.com', 'tantosj1@gmail.com']);
+    }
+
+    match /config/{doc} {
+      allow read: if permitido();
+      allow write: if admin();
+    }
+
+    match /notas/{id} {
+      allow read, delete: if permitido();
+      allow create, update: if permitido()
+        && empresaValida(request.resource.data)
+        && valorValido(request.resource.data)
+        && request.resource.data.tipo in ['pagar', 'receber']
+        && request.resource.data.status in ['aberto', 'pago', 'cancelado'];
+    }
+
+    match /movimentos/{id} {
+      allow read, delete: if permitido();
+      allow create, update: if permitido()
+        && empresaValida(request.resource.data)
+        && valorValido(request.resource.data)
+        && request.resource.data.tipo in ['entrada', 'saida'];
+    }
+
+    // Arquivos anexados (PDF, fotos, planilhas) guardados em partes
+    match /arquivos/{id} {
+      allow read, create, delete: if permitido();
+      allow update: if false;
+      match /partes/{parte} {
+        allow read, create, delete: if permitido();
+        allow update: if false;
+      }
+    }
+
+    // Trilha de auditoria: qualquer usuário permitido registra, só admin consulta,
+    // ninguém altera ou apaga.
+    match /auditoria/{id} {
+      allow create: if permitido() && request.resource.data.usuario == emailAtual();
+      allow read: if admin();
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

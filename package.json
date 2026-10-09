@@ -1,0 +1,41 @@
+{
+  "name": "controle-rs",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "dev:emulador": "VITE_USE_EMULATOR=true vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "emuladores": "firebase emulators:start --only auth,firestore",
+    "deploy": "vite build && firebase deploy --only hosting,firestore",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tantosj1-hash/CONTROLE-RS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tantosj1-hash/CONTROLE-RS/issues"
+  },
+  "homepage": "https://github.com/tantosj1-hash/CONTROLE-RS#readme",
+  "dependencies": {
+    "firebase": "^10.14.1",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "jszip": "^3.10.2",
+    "pdfjs-dist": "^3.11.174",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tesseract.js": "^5.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "firebase-tools": "^15.33.0",
+    "jsdom": "^25.0.1",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  },
+  "private": true,
+  "type": "module"
+}
