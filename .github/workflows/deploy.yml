@@ -1,0 +1,74 @@
+name: Publicar no Firebase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-firebase
+  cancel-in-progress: false
+
+jobs:
+  testar-e-publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Credenciais do Firebase
+        id: cred
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PROJETO_CONFIGURADO: ${{ vars.FIREBASE_PROJECT_ID || secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::warning::Configure o secret FIREBASE_SERVICE_ACCOUNT para publicar (veja o README)."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          PROJETO="${PROJETO_CONFIGURADO:-$(node -p "require(process.env.RUNNER_TEMP + '/sa.json').project_id")}"
+          echo "Projeto: $PROJETO"
+          echo "projeto=$PROJETO" >> "$GITHUB_OUTPUT"
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> "$GITHUB_ENV"
+
+      - name: Preparar projeto (app web, banco e login por e-mail)
+        if: steps.cred.outputs.ok == 'true'
+        continue-on-error: true
+        env:
+          PROJETO: ${{ steps.cred.outputs.projeto }}
+        run: |
+          FB="npx firebase"
+          if ! $FB apps:list WEB --project "$PROJETO" --non-interactive | grep -q "1:"; then
+            $FB apps:create WEB "Controle RS" --project "$PROJETO" --non-interactive || true
+          fi
+          $FB firestore:databases:create "(default)" --location southamerica-east1 --project "$PROJETO" --non-interactive || true
+          gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: $PROJETO" \
+            "https://identitytoolkit.googleapis.com/v2/projects/$PROJETO/identityPlatform:initializeAuth" || true
+          echo
+          curl -s -X PATCH -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -H "x-goog-user-project: $PROJETO" \
+            "https://identitytoolkit.googleapis.com/admin/v2/projects/$PROJETO/config?updateMask=signIn.email.enabled,signIn.email.passwordRequired" \
+            -d '{"signIn":{"email":{"enabled":true,"passwordRequired":true}}}' | head -c 600
+          echo
+
+      - name: Publicar (Hosting + regras do Firestore)
+        if: steps.cred.outputs.ok == 'true'
+        env:
+          PROJETO: ${{ steps.cred.outputs.projeto }}
+        run: |
+          npx firebase deploy --only hosting,firestore --project "$PROJETO" --non-interactive
+          echo "### Site publicado: https://$PROJETO.web.app" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Limpar credenciais
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
