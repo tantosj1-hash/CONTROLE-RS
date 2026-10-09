@@ -3,7 +3,7 @@ import {
   collection, onSnapshot, query, orderBy, limit,
 } from 'firebase/firestore';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { db, auth, DONOS, criarContaUsuario } from '../firebase';
+import { db, auth, ehDono, criarContaUsuario } from '../firebase';
 import { useDados } from '../Principal';
 import { msgErro } from './Login';
 import { confirmar } from '../components/ui';
@@ -68,7 +68,7 @@ function Empresas() {
               <input disabled={!admin} value={form[emp.id]?.razaoSocial || ''} onChange={(e) => setForm((f) => ({ ...f, [emp.id]: { ...f[emp.id], razaoSocial: e.target.value } }))} placeholder={emp.nome} />
             </label>
             <label className="col2">CNPJ – {emp.nome}
-              <input disabled={!admin} value={formatarDoc(form[emp.id]?.cnpj || '')} onChange={(e) => setForm((f) => ({ ...f, [emp.id]: { ...f[emp.id], cnpj: soDigitos(e.target.value) } }))} placeholder="00.000.000/0000-00" />
+              <input disabled={!admin} value={formatarDoc(form[emp.id]?.cnpj || '')} onChange={(e) => setForm((f) => ({ ...f, [emp.id]: { ...f[emp.id], cnpj: soDigitos(e.target.value) } }))} placeholder={configEmpresas?.[emp.id]?.cnpjHash ? 'Já cadastrado (oculto) – digite para exibir nos relatórios' : '00.000.000/0000-00'} />
             </label>
           </div>
         ))}
@@ -119,8 +119,8 @@ function Usuarios() {
         <table className="tabela">
           <thead><tr><th>E-mail</th><th>Nome</th><th>Perfil</th><th /></tr></thead>
           <tbody>
-            {DONOS.map((d) => <tr key={d}><td>{d}</td><td>—</td><td>Administrador (dono)</td><td /></tr>)}
-            {lista.filter((u) => !DONOS.includes(u.id)).map((u) => (
+            <tr><td colSpan={4} className="mini-texto">Os donos do sistema têm acesso permanente de administrador e não aparecem nesta lista.</td></tr>
+            {lista.filter((u) => !ehDono(u.id)).map((u) => (
               <tr key={u.id}>
                 <td>{u.id}</td>
                 <td>{u.nome || '—'}</td>

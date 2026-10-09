@@ -1,3 +1,4 @@
+import { sha256 } from 'js-sha256';
 import { soDigitos, semAcento, difDias } from './format';
 
 const PALAVRAS_IGNORADAS = new Set(['ltda', 'me', 'epp', 'eireli', 'sa', 'de', 'da', 'do', 'dos', 'das', 'e', 'pix', 'ted', 'doc',
@@ -69,16 +70,22 @@ export function notaDuplicada(n, notas) {
 }
 
 // Descobre a empresa (RS Serviços / RS Gestões) pelo CNPJ que aparece no documento.
+// O CNPJ pode estar salvo em Configurações ou só como SHA-256 (cnpjHash) no código.
+function confere(doc, info) {
+  const d = soDigitos(doc);
+  if (!d || !info) return false;
+  const cnpj = soDigitos(info.cnpj);
+  if (cnpj) return cnpj === d;
+  return !!info.cnpjHash && d.length === 14 && sha256(d) === info.cnpjHash;
+}
+
 export function empresaPorDocumentos(docs, configEmpresas) {
-  const lista = (docs || []).map(soDigitos).filter(Boolean);
   for (const [id, info] of Object.entries(configEmpresas || {})) {
-    const cnpj = soDigitos(info?.cnpj);
-    if (cnpj && lista.includes(cnpj)) return id;
+    if ((docs || []).some((d) => confere(d, info))) return id;
   }
   return null;
 }
 
 export function ehNossoDocumento(doc, configEmpresas) {
-  const d = soDigitos(doc);
-  return !!d && Object.values(configEmpresas || {}).some((e) => soDigitos(e?.cnpj) === d);
+  return Object.values(configEmpresas || {}).some((e) => confere(doc, e));
 }
