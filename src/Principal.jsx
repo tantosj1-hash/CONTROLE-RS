@@ -3,6 +3,7 @@ import { collection, doc, onSnapshot } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { db, auth, ehDono as ehDonoEmail } from './firebase';
 import { EMPRESAS, LISTA_EMPRESAS } from './lib/format';
+import Logo from './components/Logo';
 import Painel from './pages/Painel';
 import Notas from './pages/Notas';
 import Extrato from './pages/Extrato';
@@ -96,7 +97,7 @@ export default function Principal({ usuario }) {
     return (
       <div className="tela-login">
         <div className="cartao login">
-          <div className="logo-grande">RS</div>
+          <div className="login-logo"><Logo tamanho={46} /></div>
           <h2>Acesso não liberado</h2>
           <p>O e-mail <b>{usuario.email}</b> ainda não foi autorizado. Peça a um administrador para incluir seu e-mail em <i>Configurações e Usuários</i>.</p>
           <button className="btn primario largo" onClick={() => signOut(auth)}>Sair</button>
@@ -112,7 +113,7 @@ export default function Principal({ usuario }) {
     <Ctx.Provider value={valor}>
       <div className="layout">
         <aside className={`lateral ${menuAberto ? 'aberto' : ''}`}>
-          <div className="marca"><span className="logo">RS</span> Controle RS</div>
+          <div className="marca"><Logo tamanho={38} claro subtitulo="Controle financeiro" /></div>
           <nav>
             {PAGINAS.map((p) => (
               <button key={p.id} className={`nav-item ${pagina === p.id ? 'ativo' : ''}`} onClick={() => irPara(p.id)}>

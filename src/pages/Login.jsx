@@ -4,6 +4,7 @@ import {
   sendPasswordResetEmail, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence,
 } from 'firebase/auth';
 import { auth } from '../firebase';
+import Logo from '../components/Logo';
 
 const MENSAGENS = {
   'auth/invalid-credential': 'E-mail ou senha incorretos.',
@@ -57,8 +58,8 @@ export default function Login() {
   return (
     <div className="tela-login">
       <form className="cartao login" onSubmit={enviar}>
-        <div className="logo-grande">RS</div>
-        <h1>Controle Financeiro RS</h1>
+        <div className="login-logo"><Logo tamanho={46} /></div>
+        <div className="faixa-titulo">Controle Financeiro</div>
         <p className="sub">RS Serviços · RS Gestões</p>
         {modo === 'criar' && <p className="aviso">Primeiro acesso: use o e-mail liberado pelo administrador e crie sua senha. Você receberá um e-mail de confirmação.</p>}
         <label>E-mail<input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
@@ -103,7 +104,7 @@ export function VerificarEmail({ usuario }) {
   return (
     <div className="tela-login">
       <div className="cartao login">
-        <div className="logo-grande">RS</div>
+        <div className="login-logo"><Logo tamanho={46} /></div>
         <h2>Confirme seu e-mail</h2>
         <p>Enviamos um link de confirmação para <b>{usuario.email}</b>. Por segurança, o acesso aos dados só é liberado depois da confirmação.</p>
         {msg && <div className="ok">{msg}</div>}

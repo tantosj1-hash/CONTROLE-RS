@@ -60,7 +60,7 @@ export async function gerarPDF(opcoes) {
   const r = dadosRelatorio(opcoes);
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   const larg = doc.internal.pageSize.getWidth();
-  const azul = [30, 58, 138];
+  const azul = [156, 43, 40]; // vermelho RS
   let y = 14;
 
   doc.setFont('helvetica', 'bold');
@@ -84,7 +84,7 @@ export async function gerarPDF(opcoes) {
   const estilo = {
     styles: { fontSize: 8, cellPadding: 1.5 },
     headStyles: { fillColor: azul, textColor: 255 },
-    alternateRowStyles: { fillColor: [245, 247, 250] },
+    alternateRowStyles: { fillColor: [247, 243, 238] },
     margin: { left: 14, right: 14 },
   };
   const titulo = (t) => {
